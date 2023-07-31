@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:student_data_base/widgets/widget_view_student.dart';
-
-import '../models/student_model.dart';
+import 'package:student_data_base/data/model/student_model.dart';
+import 'package:student_data_base/presentation/home/widgets/widget_view_student.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

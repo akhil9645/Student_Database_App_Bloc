@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:student_data_base/models/student_model.dart';
-import 'package:student_data_base/widgets/search_widget.dart';
-import 'package:student_data_base/widgets/update_student.dart';
-import 'package:student_data_base/widgets/widget_view_student.dart';
+import 'package:student_data_base/data/model/student_model.dart';
 
-import '../db/db_funtion.dart';
+import 'package:student_data_base/presentation/home/widgets/search_widget.dart';
+import 'package:student_data_base/presentation/home/widgets/update_student.dart';
+import 'package:student_data_base/presentation/home/widgets/widget_view_student.dart';
+
+import '../../data/db/db_funtion.dart';
 
 class ListStudentWidget extends StatefulWidget {
   const ListStudentWidget({super.key});

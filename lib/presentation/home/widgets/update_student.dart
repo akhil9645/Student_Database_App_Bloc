@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:student_data_base/data/model/student_model.dart';
 
-import '../db/db_funtion.dart';
-import '../models/student_model.dart';
-import 'main_screen.dart';
+import '../../../data/db/db_funtion.dart';
+
+import '../../mainpage/main_screen.dart';
 
 class UpdateStudent extends StatefulWidget {
   final int index;
@@ -210,7 +211,6 @@ class _UpdateStudentState extends State<UpdateStudent> {
   Widget szdBox = const SizedBox(height: 20);
 
   Future<void> keyBoard(keyboard) async {
-    keyboardType:
     TextInputType.number;
   }
 

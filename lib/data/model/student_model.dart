@@ -25,3 +25,5 @@ class StudentModel {
       required this.image,
       this.id});
 }
+
+List<StudentModel> theStudentlist = [];

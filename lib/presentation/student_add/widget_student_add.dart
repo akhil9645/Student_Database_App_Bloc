@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:student_data_base/widgets/main_screen.dart';
+import 'package:student_data_base/data/model/student_model.dart';
+import 'package:student_data_base/presentation/mainpage/main_screen.dart';
 
-import '../db/db_funtion.dart';
-import '../models/student_model.dart';
+import '../../data/db/db_funtion.dart';
 
 class StudentAddWidget extends StatefulWidget {
   const StudentAddWidget({super.key});
