@@ -4,26 +4,26 @@ part 'student_model.g.dart';
 @HiveType(typeId: 1)
 class StudentModel {
   @HiveField(0)
-  int? id;
+  String name;
 
   @HiveField(1)
-  final String name;
+  String phone;
 
   @HiveField(2)
-  final String age;
+  String age;
 
   @HiveField(3)
-  final String num;
+  int? id;
 
   @HiveField(4)
-  final String image;
+  String imagePath;
 
   StudentModel(
       {required this.name,
+      required this.phone,
       required this.age,
-      required this.num,
-      required this.image,
+      required this.imagePath,
       this.id});
 }
 
-List<StudentModel> theStudentlist = [];
+List<StudentModel> theStudentList = [];

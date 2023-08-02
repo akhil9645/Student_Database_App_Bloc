@@ -8,6 +8,10 @@ class StudentState {
   StudentState.forScreenNav({required this.current, this.studentList});
 }
 
-class StudentblocInitial extends StudentState {
-  StudentblocInitial() : super(studentList: theStudentlist, current: 0);
+class StudentInitial extends StudentState {
+  StudentInitial()
+      : super(
+          studentList: theStudentList,
+          current: 0,
+        );
 }

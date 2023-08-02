@@ -1,261 +1,184 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:student_data_base/data/model/student_model.dart';
+import 'package:student_data_base/domain/imagepicking/imagepicking_bloc.dart';
 import 'package:student_data_base/presentation/mainpage/main_screen.dart';
 
 import '../../data/db/db_funtion.dart';
 
-class StudentAddWidget extends StatefulWidget {
-  const StudentAddWidget({super.key});
-
-  @override
-  State<StudentAddWidget> createState() => _StudentAddWidgetState();
-}
-
-class _StudentAddWidgetState extends State<StudentAddWidget> {
-  final TextEditingController _nameController = TextEditingController();
-
-  final TextEditingController _ageController = TextEditingController();
-
-  final TextEditingController _numController = TextEditingController();
-
-  String? imagepath;
+// ignore: must_be_immutable
+class StudentAddingPage extends StatelessWidget {
+  StudentAddingPage({super.key});
+  String? imgPath;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Add Student'),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_circle_left_sharp,
-            size: 40,
-          ),
-          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (ctx) => const MainScreen()),
-              (route) => false),
+        backgroundColor: Colors.teal,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          "Add students",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Stack(children: [
-                  CircleAvatar(
-                    backgroundImage: imagepath == null
-                        ? const AssetImage('assets/1.jpg') as ImageProvider
-                        : FileImage(File(imagepath!)),
-                    radius: 50,
-                  ),
-                  Positioned(
-                      bottom: 0,
-                      right: 0,
-                      width: 30,
-                      child: InkWell(
-                          child: const Icon(
-                            Icons.add_a_photo_sharp,
-                            size: 30,
-                            color: Colors.teal,
-                          ),
-                          onTap: () {
-                            takePhoto();
-                          })),
-                ]),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    suffixIcon: const Icon(
-                      Icons.abc_sharp,
-                      color: Colors.teal,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromRGBO(234, 236, 238, 2),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)),
-                    hintText: 'Name',
+        child: ListView(
+          children: [
+            Stack(
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: BlocBuilder<ImagePickingBloc, ImagePickingState>(
+                    builder: (context, state) {
+                      return CircleAvatar(
+                          radius: 100,
+                          backgroundImage: imgPath == null
+                              ? const AssetImage("asset/1.jpg") as ImageProvider
+                              : FileImage(
+                                  File(state.image),
+                                ));
+                    },
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _ageController,
-                  buildCounter: (BuildContext context,
-                          {required int currentLength,
-                          int? maxLength,
-                          bool? isFocused}) =>
-                      null,
-                  decoration: InputDecoration(
-                    suffixIcon: const Icon(
-                      Icons.numbers_sharp,
-                      color: Colors.teal,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromRGBO(234, 236, 238, 2),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    hintText: 'Age',
-                  ),
-                  keyboardType: TextInputType.number,
-                  maxLength: 2,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _numController,
-                  buildCounter: (BuildContext context,
-                          {required int currentLength,
-                          int? maxLength,
-                          bool? isFocused}) =>
-                      null,
-                  decoration: InputDecoration(
-                    suffixIcon: const Icon(
-                      Icons.phone_android,
-                      color: Colors.teal,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromRGBO(234, 236, 238, 2),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)),
-                    hintText: 'Phone Number',
-                  ),
-                  keyboardType: TextInputType.number,
-                  maxLength: 10,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _numController,
-                  buildCounter: (BuildContext context,
-                          {required int currentLength,
-                          int? maxLength,
-                          bool? isFocused}) =>
-                      null,
-                  decoration: InputDecoration(
-                    suffixIcon: const Icon(
-                      Icons.place,
-                      color: Colors.teal,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromRGBO(234, 236, 238, 2),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)),
-                    hintText: 'Location',
-                  ),
-                ),
-              ),
-              ElevatedButton.icon(
+                Positioned(
+                  right: 80,
+                  bottom: 10,
+                  child: IconButton(
+                      iconSize: 35,
+                      onPressed: () async {
+                        await takePhoto();
+                        context
+                            .read<ImagePickingBloc>()
+                            .add(ChangeImg(image: imgPath ?? ""));
+                      },
+                      icon: const Icon(Icons.camera_alt_outlined)),
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            formField(
+                nameController, "Name", Icons.abc, TextInputType.name, 50),
+            formField(
+                ageController, "Age", Icons.place, TextInputType.number, 2),
+            formField(
+                phoneController, "Phone", Icons.phone, TextInputType.phone, 10),
+            ElevatedButton(
                 onPressed: () {
-                  if (imagepath != null &&
-                      _nameController.text.isNotEmpty &&
-                      _ageController.text.isNotEmpty &&
-                      _numController.text.isNotEmpty) {
+                  if (imgPath != null &&
+                      nameController.text.isNotEmpty &&
+                      phoneController.text.isNotEmpty &&
+                      ageController.text.isNotEmpty) {
                     onAddStudentButtonClicked(context);
                     Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (ctx) => const MainScreen()),
+                        MaterialPageRoute(builder: (ctx) => MainScreen()),
                         (route) => false);
                   } else {
-                    showSnackBar();
+                    showSnackBar(context);
                   }
                 },
-                icon: const Icon(Icons.add),
-                label: const Text('Add Student'),
-              )
-            ],
-          ),
+                child: const Text(
+                  "Submit",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ))
+          ],
         ),
       ),
     );
   }
 
-  Future<void> onAddStudentButtonClicked(BuildContext context) async {
-    final _name = _nameController.text.trim();
-    final _age = _ageController.text.trim();
-    final _num = _numController.text.trim();
-
-    if (_name.isEmpty || _age.isEmpty || _num.isEmpty) {
-      return;
-    }
-
-    final _student = StudentModel(
-      name: _name,
-      age: _age,
-      num: _num,
-      image: imagepath!,
+  Padding formField(TextEditingController controller, String hint,
+      IconData icon, TextInputType input, length) {
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: TextFormField(
+        maxLength: length,
+        keyboardType: input,
+        controller: controller,
+        decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            filled: true,
+            fillColor: Colors.white,
+            suffixIcon: Icon(
+              icon,
+              color: const Color.fromARGB(255, 20, 136, 82),
+            )),
+      ),
     );
-
-    addStudent(_student).then((val) => studentAddSnackBar());
   }
 
   Future<void> takePhoto() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
+
     if (pickedFile != null) {
-      setState(() {
-        imagepath = pickedFile.path;
-      });
+      imgPath = pickedFile.path;
     }
   }
 
-  showSnackBar() {
-    var _errMsg = "";
+  Future<void> onAddStudentButtonClicked(BuildContext context) async {
+    final name = nameController.text.trim();
+    final age = ageController.text.trim();
+    final number = phoneController.text.trim();
 
-    if (imagepath == null &&
-        _nameController.text.isEmpty &&
-        _ageController.text.isEmpty &&
-        _numController.text.isEmpty) {
-      _errMsg = "Please Insert Valid Data In All Fields ";
-    } else if (imagepath == null) {
-      _errMsg = "Please Select An Image to Continue";
-    } else if (_nameController.text.isEmpty) {
-      _errMsg = "Name  Must Be Filled";
-    } else if (_ageController.text.isEmpty) {
-      _errMsg = "Age  Must Be Filled";
-    } else if (_numController.text.isEmpty) {
-      _errMsg = "Phone Number Must Be Filled";
+    if (name.isEmpty || age.isEmpty || number.isEmpty || imgPath == null) {
+      return;
+    }
+
+    final student = StudentModel(
+      name: name,
+      age: age,
+      phone: number,
+      imagePath: imgPath!,
+    );
+
+    addStudents(student, context).then((val) => studentAddSnackBar(context));
+  }
+
+  showSnackBar(BuildContext context) {
+    var errMsg = "";
+
+    if (imgPath == null &&
+        nameController.text.isEmpty &&
+        ageController.text.isEmpty &&
+        phoneController.text.isEmpty) {
+      errMsg = "Please Insert Valid Data In All Fields ";
+    } else if (imgPath == null) {
+      errMsg = "please choose profile pic to Continue";
+    } else if (ageController.text.isEmpty) {
+      errMsg = "Please enter the age to Continue";
+    } else if (nameController.text.isEmpty) {
+      errMsg = "Name  Must Be Filled";
+    } else if (phoneController.text.isEmpty) {
+      errMsg = "Phone Number Must Be Filled";
     }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.grey,
         margin: const EdgeInsets.all(10.0),
-        content: Text(_errMsg),
+        content: Text(errMsg),
       ),
     );
   }
 
-  void studentAddSnackBar() {
+  void studentAddSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.teal,
+        backgroundColor: Color.fromARGB(255, 132, 110, 170),
         content: Text('This Student Inserted Into Database'),
       ),
     );

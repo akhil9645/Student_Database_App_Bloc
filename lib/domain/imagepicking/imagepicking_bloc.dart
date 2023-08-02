@@ -4,8 +4,8 @@ import 'package:meta/meta.dart';
 part 'imagepicking_event.dart';
 part 'imagepicking_state.dart';
 
-class ImagepickingBloc extends Bloc<ImagepickingEvent, ImagePickingState> {
-  ImagepickingBloc() : super(ImagepickingInitial()) {
+class ImagePickingBloc extends Bloc<ImagePickingEvent, ImagePickingState> {
+  ImagePickingBloc() : super(ImagePickingInitial()) {
     on<ChangeImg>((event, emit) {
       return emit(ImagePickingState(image: event.image));
     });

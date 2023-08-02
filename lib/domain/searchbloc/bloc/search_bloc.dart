@@ -9,6 +9,7 @@ part 'search_state.dart';
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   SearchBloc() : super(SearchInitial()) {
     on<ForSearch>((event, emit) {
+      state.searchStudents = event.students;
       return emit(SearchState(searchStudents: state.searchStudents));
     });
   }

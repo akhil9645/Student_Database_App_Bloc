@@ -1,9 +1,9 @@
 part of '../imagepicking/imagepicking_bloc.dart';
 
 @immutable
-abstract class ImagepickingEvent {}
+abstract class ImagePickingEvent {}
 
-class ChangeImg extends ImagepickingEvent {
+class ChangeImg extends ImagePickingEvent {
   final String image;
   ChangeImg({required this.image});
 }

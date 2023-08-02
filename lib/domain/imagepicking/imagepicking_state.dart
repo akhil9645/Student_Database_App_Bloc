@@ -5,6 +5,6 @@ class ImagePickingState {
   ImagePickingState({required this.image});
 }
 
-class ImagepickingInitial extends ImagePickingState {
-  ImagepickingInitial() : super(image: "");
+class ImagePickingInitial extends ImagePickingState {
+  ImagePickingInitial() : super(image: "");
 }

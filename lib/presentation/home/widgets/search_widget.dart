@@ -1,104 +1,110 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:student_data_base/data/model/student_model.dart';
-import 'package:student_data_base/presentation/home/widgets/widget_view_student.dart';
+import 'package:student_data_base/domain/searchbloc/bloc/search_bloc.dart';
+import 'package:student_data_base/presentation/home/widgets/profile.dart';
+import 'package:student_data_base/presentation/mainpage/main_screen.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
-
-  @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<SearchScreen> {
-  final _searchController = TextEditingController();
-
-  List<StudentModel> studentList =
-      Hive.box<StudentModel>('student_db1').values.toList();
-
-  late List<StudentModel> studentDisplay = List<StudentModel>.from(studentList);
+// ignore: must_be_immutable
+class SearchWidget extends StatelessWidget {
+  SearchWidget({super.key});
+  TextEditingController searchController = TextEditingController();
+  late List<StudentModel> searchList = List<StudentModel>.from(theStudentList);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            children: [
-              TextFormField(
-                autofocus: true,
-                controller: _searchController,
-                cursorColor: Colors.black,
-                style: const TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () => clearText(),
-                  ),
-                  filled: true,
-                  fillColor: const Color.fromRGBO(234, 236, 238, 2),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(50)),
-                  hintText: 'search',
-                ),
-                onChanged: (value) {
-                  _searchStudent(value.trim());
-                },
+      appBar: AppBar(
+        backgroundColor: Colors.teal,
+        title: const Text(
+          "Search",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: searchController,
+              onChanged: (value) {
+                serchfuntion(value, context);
+              },
+              decoration: InputDecoration(
+                hintText: "Search Name",
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: const Icon(Icons.search, color: Colors.black),
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      if (searchController.text.isEmpty) {
+                        Navigator.pushAndRemoveUntil(context,
+                            MaterialPageRoute(builder: (context) {
+                          return MainScreen();
+                        }), (route) => false);
+                      } else {
+                        searchController.clear();
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.clear,
+                    )),
               ),
-              Expanded(
-                child: studentDisplay.isNotEmpty
+            ),
+          ),
+          BlocBuilder<SearchBloc, SearchState>(
+            builder: (context, state) {
+              return Expanded(
+                child: state.searchStudents.isNotEmpty
                     ? ListView.builder(
-                        itemCount: studentDisplay.length,
                         itemBuilder: (context, index) {
-                          File img = File(studentDisplay[index].image);
-                          return ListTile(
+                          return Card(
+                              child: ListTile(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return ProfileScreen(
+                                    student: state.searchStudents[index],
+                                  );
+                                },
+                              ));
+                            },
+                            title: Text(state.searchStudents[index].name),
+                            subtitle: Text(state.searchStudents[index].age),
                             leading: CircleAvatar(
-                              backgroundImage: FileImage(img),
+                              radius: 30,
+                              backgroundImage: FileImage(
+                                  File(state.searchStudents[index].imagePath)),
                             ),
-                            title: Text(studentDisplay[index].name),
-                            onTap: (() {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => StudentView(
-                                    passValue: studentDisplay[index],
-                                    passId: index,
-                                  ),
-                                ),
-                              );
-                            }),
-                          );
+                          ));
                         },
+                        itemCount: state.searchStudents.length,
                       )
                     : const Center(
                         child: Text(
-                          'No match found',
-                          style: TextStyle(fontSize: 20),
-                          textAlign: TextAlign.center,
+                          "No Students are found",
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
-              )
-            ],
+              );
+            },
           ),
-        ),
+        ],
       ),
     );
   }
 
-  void _searchStudent(String value) {
-    setState(() {
-      studentDisplay = studentList
-          .where((element) =>
-              element.name.toLowerCase().contains(value.toLowerCase()))
-          .toList();
-    });
-  }
-
-  void clearText() {
-    _searchController.clear();
+  void serchfuntion(String value, BuildContext context) {
+    searchList = theStudentList
+        .where((element) =>
+            element.name.toLowerCase().startsWith(value.toLowerCase()) ||
+            element.age.startsWith(value))
+        .toList();
+    context.read<SearchBloc>().add(ForSearch(students: searchList));
   }
 }
